@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "employee")
 public class Employee {
 
     @Id
@@ -32,9 +33,11 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private LocalDate birthDate;
 
-
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private EmployeeRole role;
 
 }
