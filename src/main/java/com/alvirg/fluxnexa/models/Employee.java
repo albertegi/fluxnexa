@@ -6,8 +6,6 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Data
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -39,5 +37,9 @@ public class Employee {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private EmployeeRole role;
+
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
 }
