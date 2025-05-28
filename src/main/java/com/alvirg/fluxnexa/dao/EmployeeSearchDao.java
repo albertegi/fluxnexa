@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -19,6 +20,7 @@ public class EmployeeSearchDao {
     private final EntityManager entityManager;
 
     public List<Employee> findAllBySimpleQuery(String firstName, String lastName, String email){
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
 
@@ -53,7 +55,47 @@ public class EmployeeSearchDao {
 
 
 //        return entityManager.createQuery(criteriaQuery).getResultList();
-//
+
+
+    }
+
+    public List<Employee> findAllByCriteria(SearchRequest searchRequest) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // select from employee
+
+        Root<Employee> root = criteriaQuery.from(Employee.class);
+
+        if (searchRequest.getFirstName() != null) {
+            Predicate firstNamePredicate = criteriaBuilder
+                    .like(root.get("firstName"), "%" + searchRequest.getFirstName() + "%");
+            predicates.add(firstNamePredicate);
+
+        }
+
+        if (searchRequest.getLastName() != null) {
+            Predicate lastNamePredicate = criteriaBuilder
+                    .like(root.get("lastName"), "%" + searchRequest.getLastName() + "%");
+            predicates.add(lastNamePredicate);
+
+        }
+
+        if (searchRequest.getEmail() != null) {
+            Predicate emailPredicate = criteriaBuilder
+                    .like(root.get("email"), "%" + searchRequest.getEmail() + "%");
+            predicates.add(emailPredicate);
+
+
+            criteriaQuery.where(
+                    criteriaBuilder.or(predicates.toArray(predicates.toArray(new Predicate[0])))
+            );
+        }
+
+        TypedQuery<Employee> query = entityManager.createQuery(criteriaQuery);
+        return query.getResultList();
     }
 
 
